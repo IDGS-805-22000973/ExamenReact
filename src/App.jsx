@@ -1,34 +1,16 @@
 import { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Login from './components/Login'
-import Footer from './components/Footer'
-import Header from './components/Header'
-import MaquinasList from './components/MaquinasList'
+import { BrowserRouter } from 'react-router-dom' // ← Importa BrowserRouter aquí
+import { AuthProvider } from '../src/contexts/AuthContext' // ← Asegúrate de importar AuthProvider
+import AppRoutes from '../src/routes/AppRouter' // ← Asegúrate de importar AppRoutes
 
 function App() {
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
   return (
-    <>
-      {isLoggedIn && <Header isLoggedIn={isLoggedIn} />}
-
-      <main>
-        <Routes>
-          <Route
-            path="/"
-            element={<Login onLogin={() => setIsLoggedIn(true)} />}
-          />
-          <Route
-            path="/maquinas"
-            element={<MaquinasList />}
-          />
-        </Routes>
-      </main>
-
-      {isLoggedIn && <Footer />}
-    </>
-  )
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App

@@ -1,87 +1,100 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useContext } from "react";
+import Maquina from "../components/Maquina";
+import { useNavigate } from "react-router-dom";
+import api from "../helpers/axiosConfig";
+import { AuthContext } from "../contexts/AuthContext";
 
-function Login({ onLogin }) {
+const Login = () => {
+    const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
+    const [form, setForm] = useState({ email: "", password: "" });
+    const [error, setError] = useState("");
 
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
 
-  const handleLogin = (e) => {
-    e.preventDefault()
-    console.log('Usuario:', username)
-    console.log('Contraseña:', password)
+        try {
+            const res = await api.post("/Account/login", form);
+            if (res.data.isSuccess) {
+                login(res.data.token);
+                navigate("/usuarios");
+            } else {
+                setError(res.data.message || "Credenciales inválidas");
+            }
+        } catch (err) {
+            console.error(err);
+            setError("Error al iniciar sesión. Verifica tus datos.");
+        }
+    };
 
-    onLogin()
+    return (
+        <div className="container-fluid vh-100 bg-light">
+            <div className="row justify-content-center align-items-center h-100">
+                <div className="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+                    <div className="card shadow-sm">
+                        <div className="card-body p-4">
+                            {/* Logo centrado */}
+                            <div className="text-center mb-4">
+                                <img
+                                    src="https://mexicoindustry.com/admin/images/empresas/empresas_logos/universidad-tecnologica-de-leon-utl.jpg"
+                                    alt="Logo empresa"
+                                    className="img-fluid rounded"
+                                    style={{ maxWidth: "120px" }}
+                                />
+                            </div>
 
-    navigate('/maquinas')
-  }
+                            <h4 className="card-title text-center mb-4">Iniciar sesión</h4>
 
-  return (
-    <div className="container-fluid vh-100 bg-light">
-      <div className="row justify-content-center align-items-center h-100">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow-lg">
-            <div className="card-body p-5">
-              <div className="text-center mb-4">
-                <h2 className="card-title text-secondary">
-                  <i className="bi bi-box-arrow-in-right me-2"></i>
-                  Bienvenido al GYM UTl
-                </h2>
-              </div>
-              <div className="text-center mb-4">
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-3">
+                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        className="form-control"
+                                        value={form.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-              </div>
-              <form onSubmit={handleLogin}>
+                                <div className="mb-3">
+                                    <label htmlFor="password" className="form-label">Contraseña</label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        className="form-control"
+                                        value={form.password}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-                <div className="mb-3">
-                  <label htmlFor="username" className="form-label">
-                    <i className="bi bi-person me-2"></i>Usuario
-                  </label>
-                  <input
-                    id="username"
-                    type="text"
-                    className="form-control form-control-lg"
-                    placeholder="Usuario"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
+                                {error && (
+                                    <div className="alert alert-danger alert-dismissible fade show py-2" role="alert">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <div className="d-grid">
+                                    <button type="submit" className="btn btn-primary">
+                                        Entrar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-
-                <div className="mb-4">
-                  <label htmlFor="password" className="form-label">
-                    <i className="bi bi-lock me-2"></i>Contraseña
-                  </label>
-                  <input
-                    id="password"
-                    type="password"
-                    className="form-control form-control-lg"
-                    placeholder="Constraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="d-grid">
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-lg"
-                  >
-                    <i className="bi bi-box-arrow-in-right me-2"></i>
-                    Entrar
-                  </button>
-                </div>
-
-              </form>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  )
-}
+    );
+};
 
-export default Login
+export default Login;
