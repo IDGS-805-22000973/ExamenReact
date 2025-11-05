@@ -22,7 +22,7 @@ const Login = () => {
             const res = await api.post("/Account/login", form);
             if (res.data.isSuccess) {
                 login(res.data.token);
-                navigate("/usuarios");
+                navigate("/dashboard");
             } else {
                 setError(res.data.message || "Credenciales inválidas");
             }
