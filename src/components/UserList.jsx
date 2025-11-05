@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react"; // ← Agregar useContext aquí
+import { AuthContext } from "../contexts/AuthContext";
 import {
     getUsers,
     createUser,
@@ -7,6 +8,7 @@ import {
 } from "../services/userService";
 
 const UserList = () => {
+    const { user, logout } = useContext(AuthContext);
     const [users, setUsers] = useState([]);
     const [form, setForm] = useState({
         userName: "",
@@ -64,8 +66,6 @@ const UserList = () => {
 
         return newErrors;
     };
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -140,6 +140,22 @@ const UserList = () => {
         setEditingId(null);
         resetForm();
     };
+
+    // RETURN CORREGIDO - Elimina las llaves {} innecesarias
+    if (!user) {
+        return (
+            <div className="container mt-5">
+                <div className="alert alert-warning text-center" role="alert">
+                    Por favor, inicie sesión para ver la lista de usuarios.
+                </div>
+                <div className="text-center mt-4">
+                    <button onClick={logout} className="btn btn-outline-danger">
+                        Cerrar sesión   
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container-fluid py-4" style={{ backgroundColor: '#f4f6f8', minHeight: '100vh' }}>
@@ -306,9 +322,13 @@ const UserList = () => {
                     </div>
                 </div>
             </div>
+            <div className="text-center mt-4">
+                <button onClick={logout} className="btn btn-outline-danger">
+                    Cerrar sesión
+                </button>
+            </div>
         </div>
     );
-
 };
 
 export default UserList;
